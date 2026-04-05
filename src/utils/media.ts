@@ -3,11 +3,12 @@ import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import { jsPDF } from 'jspdf';
 import * as pdfjs from 'pdfjs-dist';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 import mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+// Configure PDF.js worker using Vite's ?url import for local bundling
+pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 export const compressImage = async (file: File, options: any) => {
   try {
@@ -235,4 +236,51 @@ export const xlsxToCsv = async (file: File) => {
   const worksheet = workbook.Sheets[firstSheetName];
   const csv = XLSX.utils.sheet_to_csv(worksheet);
   return new Blob([csv], { type: 'text/csv' });
+};
+
+export const pdfToHtml = async (file: File) => {
+  const arrayBuffer = await file.arrayBuffer();
+  const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+  const pdf = await loadingTask.promise;
+  
+  let htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>${file.name}</title>
+      <style>
+        body { font-family: -apple-system, system-ui, sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 40px 20px; color: #1e293b; background: #f8fafc; }
+        .page { background: white; margin-bottom: 30px; padding: 50px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
+        .page-num { color: #64748b; font-size: 12px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
+        p { margin-bottom: 1em; white-space: pre-wrap; }
+        h1, h2, h3 { color: #0f172a; margin-top: 1.5em; }
+      </style>
+    </head>
+    <body>
+  `;
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    let lastY = -1;
+    let pageHtml = `<div class="page"><div class="page-num">Page ${i}</div>`;
+    
+    textContent.items.forEach((item: any) => {
+      // Grouping logic based on Y coordinates to maintain basic paragraph structure
+      if (lastY !== -1 && Math.abs(item.transform[5] - lastY) > 5) {
+        pageHtml += `</p><p>`;
+      } else if (lastY === -1) {
+        pageHtml += `<p>`;
+      }
+      pageHtml += item.str + " ";
+      lastY = item.transform[5];
+    });
+
+    pageHtml += `</p></div>`;
+    htmlContent += pageHtml;
+  }
+
+  htmlContent += `</body></html>`;
+  return new Blob([htmlContent], { type: 'text/html' });
 };

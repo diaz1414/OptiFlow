@@ -8,7 +8,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import JSZip from 'jszip';
 import FormatPicker from '../components/FormatPicker';
-import { convertVideo, videoToGif, imagesToPdf, pdfToImages, extractAudio, docxToHtml, xlsxToHtml, xlsxToCsv } from '../utils/media';
+import { convertVideo, videoToGif, imagesToPdf, pdfToImages, extractAudio, docxToHtml, xlsxToHtml, xlsxToCsv, pdfToHtml } from '../utils/media';
 
 const convertToImage = async (file: File, targetFormat: string): Promise<Blob> => {
   return new Promise((resolve, reject) => {
@@ -96,6 +96,9 @@ const Converter = () => {
         } else {
           setResult(images[0]);
         }
+      } else if (detectedCategory === 'pdf' && targetFormat === 'html') {
+        const htmlBlob = await pdfToHtml(files[0]);
+        setResult(htmlBlob);
       } else if (detectedCategory === 'document' && targetFormat === 'html') {
         const firstFile = files[0];
         if (firstFile.name.endsWith('.docx')) {
