@@ -4,26 +4,26 @@ import { motion } from 'framer-motion';
 const steps = [
   {
     icon: <Upload className="w-8 h-8 text-indigo-400" />,
-    title: "INPUT",
-    description: "Multi-format ingest. Drop your videos, images, or documents.",
+    title: "UPLOAD",
+    description: "Multi-format selection. Easily upload your videos, images, or documents.",
     label: "Step 01"
   },
   {
     icon: <Settings className="w-8 h-8 text-purple-400" />,
-    title: "PROCESS",
-    description: "Neural optimization. Smart quality scaling and container swap.",
+    title: "CONFIGURE",
+    description: "Advanced settings. Choose your target format and optimization level.",
     label: "Step 02"
   },
   {
     icon: <Zap className="w-8 h-8 text-blue-400" />,
-    title: "RENDER",
-    description: "Local WASM engine. Blazing fast processing without cloud.",
+    title: "PROCESS",
+    description: "High-speed conversion. Fast, secure processing directly in your browser.",
     label: "Step 03"
   },
   {
     icon: <Download className="w-8 h-8 text-emerald-400" />,
-    title: "OUTPUT",
-    description: "Instant delivery. Download your optimized results directly.",
+    title: "SAVE",
+    description: "Direct delivery. Securely download your processed files instantly.",
     label: "Step 04"
   }
 ];
