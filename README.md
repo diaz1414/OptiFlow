@@ -27,7 +27,7 @@
 ```bash
 # Clone repository ini (jika ada)
 # Buka folder project
-cd resize-web
+cd optiflow
 
 # Install dependensi
 npm install
@@ -63,7 +63,7 @@ npm run dev
 ```bash
 # Clone this repository
 # Enter the project directory
-cd resize-web
+cd optiflow
 
 # Install dependencies
 npm install
