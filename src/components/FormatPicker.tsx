@@ -75,15 +75,15 @@ const FormatPicker = ({ currentFormat, onSelect, onClose, allowedCategories }: F
           
           {/* Search Header */}
           <div className="flex items-center gap-4">
-            <div className="flex-1 flex items-center gap-3 px-4 py-3 bg-white/5 rounded-2xl border border-white/10 focus-within:border-indigo-500/50 transition-all">
-              <Search className="w-4 h-4 text-slate-400" />
+            <div className="flex-1 flex items-center gap-4 px-6 py-4 bg-white/5 rounded-[2rem] border border-white/10 focus-within:border-indigo-500/50 focus-within:bg-white/[0.08] transition-all duration-300 group">
+              <Search className="w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 group-focus-within:scale-110 transition-all" />
               <input
                 autoFocus
                 type="text"
                 placeholder="Search Format..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="bg-transparent border-none outline-none text-sm w-full placeholder:text-slate-600 focus:ring-0"
+                className="bg-transparent border-none outline-none text-sm md:text-base w-full placeholder:text-slate-600 focus:ring-0 text-white font-medium"
               />
             </div>
             <button 
@@ -94,29 +94,29 @@ const FormatPicker = ({ currentFormat, onSelect, onClose, allowedCategories }: F
             </button>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-10">
             {/* Categories: Horizontal Scroll on Mobile, Sidebar on Desktop */}
             {!search && (
-              <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 md:w-32 md:border-r md:border-white/10 md:pr-8 custom-scrollbar-hide">
+              <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 md:w-36 md:border-r md:border-white/10 md:pr-10 custom-scrollbar-hide">
                 {filteredCategories.map(cat => (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`flex-shrink-0 flex flex-row md:flex-col items-center gap-2 md:gap-2 px-5 py-2.5 md:py-4 rounded-2xl transition-all duration-300
-                      ${activeCategory === cat.id ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'text-slate-500 hover:text-white hover:bg-white/5 border border-transparent'}`}
+                    className={`flex-shrink-0 flex flex-row md:flex-col items-center justify-center gap-2 md:gap-3 px-6 py-3 md:h-28 rounded-[2rem] transition-all duration-500
+                      ${activeCategory === cat.id ? 'bg-indigo-600/20 text-white border border-indigo-500/50 shadow-lg shadow-indigo-500/10' : 'text-slate-500 hover:text-white hover:bg-white/5 border border-transparent'}`}
                   >
-                    <div className={`${activeCategory === cat.id ? 'scale-110' : 'scale-100'} transition-transform duration-300`}>
+                    <div className={`${activeCategory === cat.id ? 'scale-125' : 'scale-100'} transition-transform duration-500 text-indigo-400`}>
                       {cat.icon}
                     </div>
-                    <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest whitespace-nowrap">{cat.name}</span>
+                    <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] whitespace-nowrap">{cat.name}</span>
                   </button>
                 ))}
               </div>
             )}
 
             {/* Formats Grid */}
-            <div className="flex-1 min-h-[250px]">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex-1 min-h-[300px]">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {filteredCategories
                   .filter(cat => search || cat.id === activeCategory)
                   .flatMap(cat => cat.formats)
@@ -124,11 +124,19 @@ const FormatPicker = ({ currentFormat, onSelect, onClose, allowedCategories }: F
                     <button
                       key={fmt}
                       onClick={() => { onSelect(fmt); onClose(); }}
-                      className={`h-16 rounded-2xl text-[11px] md:text-sm font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 active:scale-95
-                        ${currentFormat === fmt ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/40 border border-indigo-400/50' : 'glass border-white/5 text-slate-400 hover:text-white hover:border-white/20'}`}
+                      className={`h-14 rounded-2xl text-[11px] md:text-sm font-black uppercase tracking-[0.2em] flex items-center justify-center transition-all duration-500 active:scale-95 group relative
+                        ${currentFormat === fmt ? 'bg-indigo-600 text-white shadow-2xl shadow-indigo-600/50 border border-indigo-400/50' : 'glass border-white/5 text-slate-400 hover:text-white hover:border-white/20 hover:bg-white/[0.03]'}`}
                     >
-                      {fmt}
-                      {currentFormat === fmt && <Check className="w-4 h-4" />}
+                      <span>{fmt}</span>
+                      {currentFormat === fmt && (
+                        <motion.div 
+                          initial={{ scale: 0, opacity: 0 }} 
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="absolute top-2 right-2 bg-white/20 backdrop-blur-md rounded-full p-0.5"
+                        >
+                          <Check className="w-3 h-3 text-white" />
+                        </motion.div>
+                      )}
                     </button>
                   ))}
               </div>

@@ -53,3 +53,12 @@ body {
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+/* Custom Utilities */
+.custom-scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.custom-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
