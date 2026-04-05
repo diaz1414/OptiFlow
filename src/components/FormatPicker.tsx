@@ -25,7 +25,7 @@ const FORMAT_CATEGORIES = [
     id: 'document',
     name: 'Document',
     icon: <FileText className="w-4 h-4" />,
-    formats: ['pdf', 'png', 'jpg'] // PDF can be converted to images
+    formats: ['pdf', 'docx', 'xlsx', 'html', 'txt', 'csv', 'json']
   },
   {
     id: 'archive',
@@ -63,12 +63,16 @@ const FormatPicker = ({ currentFormat, onSelect, onClose, allowedCategories }: F
         onClick={onClose}
       />
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 10 }}
-        className="fixed inset-x-6 top-20 bottom-20 md:absolute md:inset-auto md:top-full md:right-0 mt-4 md:w-96 glass-card rounded-[2rem] shadow-2xl z-[100] border border-white/20 overflow-hidden"
+        initial={{ opacity: 0, y: '100%' }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: '100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="fixed inset-x-0 bottom-0 md:inset-auto md:absolute md:top-full md:right-0 mt-4 md:w-96 glass-card rounded-t-[2.5rem] md:rounded-[2rem] shadow-2xl z-[100] border border-white/20 overflow-hidden"
       >
-        <div className="p-6 space-y-6 bg-[#0E0A24]/98 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none h-full md:h-auto overflow-y-auto">
+        <div className="p-6 pb-12 md:pb-6 space-y-6 bg-[#0E0A24]/98 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none h-[70vh] md:h-auto overflow-y-auto">
+          {/* Mobile Handle */}
+          <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-2 md:hidden" />
+          
           {/* Search Header */}
           <div className="flex items-center gap-4">
             <div className="flex-1 flex items-center gap-2 px-4 py-3 bg-white/5 rounded-2xl border border-white/10 focus-within:border-indigo-500 transition-all">

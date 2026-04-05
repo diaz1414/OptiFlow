@@ -8,7 +8,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import JSZip from 'jszip';
 import FormatPicker from '../components/FormatPicker';
-import { convertVideo, videoToGif, imagesToPdf, pdfToImages, extractAudio } from '../utils/media';
+import { convertVideo, videoToGif, imagesToPdf, pdfToImages, extractAudio, docxToHtml, xlsxToHtml, xlsxToCsv } from '../utils/media';
 
 const convertToImage = async (file: File, targetFormat: string): Promise<Blob> => {
   return new Promise((resolve, reject) => {
@@ -50,6 +50,8 @@ const Converter = () => {
       if (firstFile.type.startsWith('video/')) setTargetFormat('mp4');
       else if (firstFile.type.includes('pdf')) setTargetFormat('png');
       else if (firstFile.type.startsWith('image/')) setTargetFormat('jpg');
+      else if (firstFile.name.endsWith('.docx')) setTargetFormat('html');
+      else if (firstFile.name.endsWith('.xlsx')) setTargetFormat('html');
       else setTargetFormat('zip');
     }
   };
@@ -59,6 +61,8 @@ const Converter = () => {
     if (files.every(f => f.type.startsWith('image/'))) return 'image';
     if (files.every(f => f.type.startsWith('video/'))) return 'video';
     if (files.every(f => f.type.includes('pdf'))) return 'pdf';
+    if (files.every(f => f.name.endsWith('.docx') || f.name.endsWith('.doc'))) return 'document';
+    if (files.every(f => f.name.endsWith('.xlsx') || f.name.endsWith('.xls'))) return 'document';
     return 'archive';
   }, [files]);
 
@@ -66,6 +70,7 @@ const Converter = () => {
     if (detectedCategory === 'video') return ['video', 'audio', 'image', 'archive'];
     if (detectedCategory === 'pdf') return ['image', 'archive', 'document'];
     if (detectedCategory === 'image') return ['image', 'document', 'archive'];
+    if (detectedCategory === 'document') return ['document', 'archive'];
     return ['archive'];
   }, [detectedCategory]);
 
@@ -91,6 +96,18 @@ const Converter = () => {
         } else {
           setResult(images[0]);
         }
+      } else if (detectedCategory === 'document' && targetFormat === 'html') {
+        const firstFile = files[0];
+        if (firstFile.name.endsWith('.docx')) {
+          const htmlBlob = await docxToHtml(firstFile);
+          setResult(htmlBlob);
+        } else if (firstFile.name.endsWith('.xlsx')) {
+          const htmlBlob = await xlsxToHtml(firstFile);
+          setResult(htmlBlob);
+        }
+      } else if (detectedCategory === 'document' && targetFormat === 'csv') {
+        const csvBlob = await xlsxToCsv(files[0]);
+        setResult(csvBlob);
       } else if (detectedCategory === 'video' && ['mp3', 'wav', 'aac', 'ogg', 'm4a'].includes(targetFormat)) {
         const audioFile = await extractAudio(files[0], targetFormat, setProgress);
         setResult(audioFile);
@@ -171,34 +188,34 @@ const Converter = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => fileInputRef.current?.click()}
-                className="group border-2 border-dashed border-white/5 hover:border-indigo-500/50 p-20 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer transition-all bg-white/[0.02]"
+                className="group border-2 border-dashed border-white/5 hover:border-indigo-500/50 p-10 md:p-20 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer transition-all bg-white/[0.02]"
               >
                 <input type="file" multiple ref={fileInputRef} onChange={handleFiles} className="hidden" />
-                <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-indigo-500/5">
-                  <ArrowRight className="w-10 h-10 text-indigo-400 rotate-90" />
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-indigo-500/10 rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-indigo-500/5">
+                  <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-indigo-400 rotate-90" />
                 </div>
-                <h3 className="text-3xl font-bold mb-3 text-white">Choose Files</h3>
-                <p className="text-slate-500 max-w-sm text-center font-bold">
+                <h3 className="text-2xl md:text-3xl font-bold mb-3 text-white">Choose Files</h3>
+                <p className="text-sm md:text-base text-slate-500 max-w-sm text-center font-bold px-4">
                   Drag and drop any files here or <span className="text-indigo-400">browse</span> from your device.
                 </p>
               </motion.div>
             ) : (
               <motion.div key="active" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-white/5">
-                  <div className="flex items-center gap-6">
-                    <div className="flex -space-x-4">
+                  <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 text-center md:text-left">
+                    <div className="flex -space-x-3 md:-space-x-4">
                       {files.slice(0, 3).map((f, i) => (
-                        <div key={i} className="w-12 h-12 rounded-xl bg-indigo-600 border-2 border-[#0A0A1F] flex items-center justify-center shadow-lg">
-                          {f.type.startsWith('image/') ? <FileImage className="w-5 h-5 text-white" /> : 
-                           f.type.startsWith('video/') ? <FileVideo className="w-5 h-5 text-white" /> :
-                           f.type.includes('pdf') ? <FileText className="w-5 h-5 text-white" /> :
-                           <Package className="w-5 h-5 text-white" />}
+                        <div key={i} className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-indigo-600 border-2 border-[#0A0A1F] flex items-center justify-center shadow-lg">
+                          {f.type.startsWith('image/') ? <FileImage className="w-4 h-4 md:w-5 md:h-5 text-white" /> : 
+                           f.type.startsWith('video/') ? <FileVideo className="w-4 h-4 md:w-5 md:h-5 text-white" /> :
+                           f.type.includes('pdf') ? <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" /> :
+                           <Package className="w-4 h-4 md:w-5 md:h-5 text-white" />}
                         </div>
                       ))}
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-white">{files.length} Files Selected</h4>
-                      <p className="text-sm text-slate-500 uppercase tracking-widest font-bold">Category: {detectedCategory}</p>
+                      <h4 className="text-lg md:text-xl font-bold text-white tracking-tight">{files.length} Files Selected</h4>
+                      <p className="text-[10px] md:text-sm text-slate-500 uppercase tracking-widest font-bold">Category: {detectedCategory}</p>
                     </div>
                   </div>
 

@@ -3,6 +3,8 @@ import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import { jsPDF } from 'jspdf';
 import * as pdfjs from 'pdfjs-dist';
+import mammoth from 'mammoth';
+import * as XLSX from 'xlsx';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
@@ -169,4 +171,68 @@ export const extractAudio = async (videoFile: File, targetFormat: string, onProg
   const type = `audio/${targetFormat}`;
   const blob = new Blob([data as any], { type });
   return new File([blob], videoFile.name.replace(/\.[^/.]+$/, "") + `.${targetFormat}`, { type });
+};
+
+export const docxToHtml = async (file: File) => {
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.convertToHtml({ arrayBuffer });
+  
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>${file.name}</title>
+      <style>
+        body { font-family: -apple-system, system-ui, sans-serif; line-height: 1.6; max-width: 800px; margin: 40px auto; padding: 20px; color: #333; }
+        img { max-width: 100%; height: auto; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f5f5f5; }
+      </style>
+    </head>
+    <body>
+      ${result.value}
+    </body>
+    </html>
+  `;
+  return new Blob([html], { type: 'text/html' });
+};
+
+export const xlsxToHtml = async (file: File) => {
+  const arrayBuffer = await file.arrayBuffer();
+  const workbook = XLSX.read(arrayBuffer);
+  let htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { border-collapse: collapse; margin-bottom: 20px; border: 1px solid #ddd; }
+        th, td { border: 1px solid #ddd; padding: 8px; font-size: 14px; text-align: left; }
+        th { background: #f8fafc; font-weight: bold; }
+        .sheet-name { font-weight: bold; font-size: 18px; margin: 20px 0 10px; color: #4f46e5; border-bottom: 2px solid #4f46e5; display: inline-block; }
+      </style>
+    </head>
+    <body>
+  `;
+
+  workbook.SheetNames.forEach(name => {
+    const sheet = workbook.Sheets[name];
+    htmlContent += `<div class="sheet-name">Sheet: ${name}</div>`;
+    htmlContent += XLSX.utils.sheet_to_html(sheet);
+  });
+
+  htmlContent += `</body></html>`;
+  return new Blob([htmlContent], { type: 'text/html' });
+};
+
+export const xlsxToCsv = async (file: File) => {
+  const arrayBuffer = await file.arrayBuffer();
+  const workbook = XLSX.read(arrayBuffer);
+  const firstSheetName = workbook.SheetNames[0];
+  const worksheet = workbook.Sheets[firstSheetName];
+  const csv = XLSX.utils.sheet_to_csv(worksheet);
+  return new Blob([csv], { type: 'text/csv' });
 };
