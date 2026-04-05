@@ -1,17 +1,27 @@
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Hero = () => {
   return (
-    <div className="pt-40 pb-20 px-6 text-center">
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6 animate-pulse">
-        <Sparkles className="w-4 h-4 text-indigo-400" />
-        <span className="text-sm font-medium text-indigo-200">New: High-Speed WebAssembly Video Compression</span>
-      </div>
+    <div className="pt-48 pb-20 px-6 text-center">
+      <motion.div 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full glass border-indigo-500/30 mb-12 shadow-2xl shadow-indigo-500/20 group hover:scale-105 transition-all cursor-default"
+      >
+        <span className="relative flex h-2.5 w-2.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
+        </span>
+        <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-indigo-300">
+          MEGAPRO v5 <span className="text-white/40 ml-1 font-medium">[ULTRA]</span>
+        </span>
+      </motion.div>
       
-      <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
-        Optimize Your Media <br />
-        <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-          Without Logic Limits
+      <h1 className="text-6xl md:text-8xl font-black mb-10 tracking-tighter leading-[0.9]">
+        Master Your <br />
+        <span className="bg-gradient-to-r from-white via-indigo-200 to-indigo-500 bg-clip-text text-transparent italic">
+          Media Output
         </span>
       </h1>
       

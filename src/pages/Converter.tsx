@@ -1,8 +1,8 @@
 import { useState, useRef, useMemo } from 'react';
 import type { ChangeEvent } from 'react';
-import { 
+import {
   X, FileImage, FileVideo, FileText, Package,
-  Download, Loader2, ArrowRight, ChevronDown, 
+  Download, Loader2, ArrowRight, ChevronDown,
   FileCheck, AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -37,7 +37,7 @@ const Converter = () => {
   const [targetFormat, setTargetFormat] = useState('png');
   const [showPicker, setShowPicker] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = (e: ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +45,7 @@ const Converter = () => {
       setFiles(Array.from(e.target.files));
       setResult(null);
       setError(null);
-      
+
       const firstFile = e.target.files[0];
       if (firstFile.type.startsWith('video/')) setTargetFormat('mp4');
       else if (firstFile.type.includes('pdf')) setTargetFormat('png');
@@ -155,12 +155,12 @@ const Converter = () => {
     const url = URL.createObjectURL(result);
     const link = document.body.appendChild(document.createElement('a'));
     link.href = url;
-    
+
     // Extract original filename without extension
     const originalName = files[0]?.name.replace(/\.[^/.]+$/, "") || "converted";
     const isZip = result.type.includes('zip') || (files.length > 1 && !result.type.includes('pdf'));
     const extension = isZip ? 'zip' : targetFormat;
-    
+
     link.download = `[OptiFlow] - ${originalName}.${extension}`;
     link.click();
     document.body.removeChild(link);
@@ -170,14 +170,24 @@ const Converter = () => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="pt-40 pb-20 px-6 max-w-6xl mx-auto">
       <div className="flex flex-col items-center text-center mb-16">
-        <div className="bg-indigo-500/10 px-4 py-2 rounded-full text-indigo-400 text-xs font-bold uppercase tracking-widest mb-6">
-          Pro Edition
-        </div>
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="inline-flex items-center gap-3 px-5 py-2 rounded-full glass border-indigo-500/30 mb-8 shadow-xl shadow-indigo-500/10 group hover:scale-105 transition-all"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+          </span>
+          <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-indigo-300">
+            Converter <span className="text-white/40 ml-1 font-medium">[Smart]</span>
+          </span>
+        </motion.div>
         <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight">
           Smart <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Converter</span>
         </h1>
         <p className="text-slate-400 text-lg max-w-2xl">
-          Complete file processing. Extract audio from video, convert PDF to Image, 
+          Complete file processing. Extract audio from video, convert PDF to Image,
           and transform formats locally with zero privacy risk.
         </p>
       </div>
@@ -209,10 +219,10 @@ const Converter = () => {
                     <div className="flex -space-x-3 md:-space-x-4">
                       {files.slice(0, 3).map((f, i) => (
                         <div key={i} className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-indigo-600 border-2 border-[#0A0A1F] flex items-center justify-center shadow-lg">
-                          {f.type.startsWith('image/') ? <FileImage className="w-4 h-4 md:w-5 md:h-5 text-white" /> : 
-                           f.type.startsWith('video/') ? <FileVideo className="w-4 h-4 md:w-5 md:h-5 text-white" /> :
-                           f.type.includes('pdf') ? <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" /> :
-                           <Package className="w-4 h-4 md:w-5 md:h-5 text-white" />}
+                          {f.type.startsWith('image/') ? <FileImage className="w-4 h-4 md:w-5 md:h-5 text-white" /> :
+                            f.type.startsWith('video/') ? <FileVideo className="w-4 h-4 md:w-5 md:h-5 text-white" /> :
+                              f.type.includes('pdf') ? <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" /> :
+                                <Package className="w-4 h-4 md:w-5 md:h-5 text-white" />}
                         </div>
                       ))}
                     </div>
@@ -226,7 +236,7 @@ const Converter = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-slate-500 uppercase">Output:</span>
                       <div className="relative">
-                        <button 
+                        <button
                           onClick={() => setShowPicker(!showPicker)}
                           className="flex items-center gap-3 px-6 py-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400 font-black uppercase text-sm hover:bg-indigo-500/20 transition-all min-w-[120px] justify-between"
                         >
@@ -235,7 +245,7 @@ const Converter = () => {
                         </button>
                         <AnimatePresence>
                           {showPicker && (
-                            <FormatPicker 
+                            <FormatPicker
                               currentFormat={targetFormat}
                               onSelect={setTargetFormat}
                               onClose={() => setShowPicker(false)}
