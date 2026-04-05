@@ -148,8 +148,13 @@ const UploadZone = () => {
                     <p className="text-sm text-slate-400">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
                   </div>
                 </div>
-                <button onClick={() => setFile(null)} className="p-2 hover:bg-white/5 rounded-xl transition-colors">
-                  <X className="w-5 h-5 text-slate-400" />
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setFile(null); }}
+                  className="p-4 -m-2 relative z-50 hover:bg-white/10 rounded-full transition-colors group"
+                  aria-label="Remove file"
+                >
+                  <X className="w-6 h-6 text-slate-400 group-hover:text-white" />
                 </button>
               </div>
 
