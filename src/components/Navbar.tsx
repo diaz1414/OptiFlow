@@ -7,11 +7,11 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center p-4 md:p-6">
       <div className="glass px-4 md:px-8 py-3 md:py-4 rounded-full flex items-center gap-4 md:gap-8 animate-float shadow-2xl border border-white/10">
-        <Link to="/" className="flex items-center gap-2 md:gap-3 group">
-          <div className="bg-white/5 p-1 rounded-full overflow-hidden shadow-lg border border-white/10 group-hover:rotate-12 transition-transform duration-500">
-            <img src={logo} alt="OptiFlow Logo" className="w-6 h-6 md:w-8 md:h-8 object-cover" />
+        <Link to="/" className="flex items-center gap-3 md:gap-4 group">
+          <div className="w-9 h-9 md:w-12 md:h-12 rounded-full overflow-hidden shadow-2xl border-2 border-indigo-500/50 group-hover:rotate-[360deg] transition-all duration-700 bg-white/5">
+            <img src={logo} alt="OptiFlow Logo" className="w-full h-full object-cover scale-110" />
           </div>
-          <span className="hidden sm:block text-lg md:text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-white/80 to-indigo-300 bg-clip-text text-transparent">
+          <span className="hidden sm:block text-xl md:text-2xl font-black tracking-tighter bg-gradient-to-r from-white via-white to-indigo-400 bg-clip-text text-transparent">
             OptiFlow
           </span>
         </Link>
