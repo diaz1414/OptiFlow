@@ -38,21 +38,35 @@ const Converter = () => {
   const [showPicker, setShowPicker] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const processFiles = (newFiles: File[]) => {
+    setFiles(newFiles);
+    setResult(null);
+    setError(null);
+
+    const firstFile = newFiles[0];
+    if (firstFile.type.startsWith('video/')) setTargetFormat('mp4');
+    else if (firstFile.type.includes('pdf')) setTargetFormat('png');
+    else if (firstFile.type.startsWith('image/')) setTargetFormat('jpg');
+    else if (firstFile.name.endsWith('.docx')) setTargetFormat('html');
+    else if (firstFile.name.endsWith('.xlsx')) setTargetFormat('html');
+    else setTargetFormat('zip');
+  };
 
   const handleFiles = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files));
-      setResult(null);
-      setError(null);
+      processFiles(Array.from(e.target.files));
+    }
+  };
 
-      const firstFile = e.target.files[0];
-      if (firstFile.type.startsWith('video/')) setTargetFormat('mp4');
-      else if (firstFile.type.includes('pdf')) setTargetFormat('png');
-      else if (firstFile.type.startsWith('image/')) setTargetFormat('jpg');
-      else if (firstFile.name.endsWith('.docx')) setTargetFormat('html');
-      else if (firstFile.name.endsWith('.xlsx')) setTargetFormat('html');
-      else setTargetFormat('zip');
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processFiles(Array.from(e.dataTransfer.files));
     }
   };
 
@@ -197,13 +211,19 @@ const Converter = () => {
         <div className="bg-[#0D0B21]/90 rounded-[2.9rem] p-8 md:p-12 relative min-h-[500px]">
           <AnimatePresence mode="wait">
             {files.length === 0 ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                onClick={() => fileInputRef.current?.click()}
-                className="group border-2 border-dashed border-white/5 hover:border-indigo-500/50 p-10 md:p-20 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer transition-all bg-white/[0.02]"
-              >
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); }}
+                  onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); }}
+                  onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); }}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`group border-2 border-dashed p-10 md:p-20 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer transition-all ${
+                    isDragging ? 'border-indigo-500 bg-indigo-500/10 scale-[1.02] shadow-2xl shadow-indigo-500/10' : 'border-white/5 bg-white/[0.02] hover:border-indigo-500/50'
+                  }`}
+                >
                 <input type="file" multiple ref={fileInputRef} onChange={handleFiles} className="hidden" />
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-indigo-500/10 rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-8 group-hover:scale-110 transition-transform shadow-xl shadow-indigo-500/5">
                   <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-indigo-400 rotate-90" />
