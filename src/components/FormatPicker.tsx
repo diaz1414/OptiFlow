@@ -69,9 +69,9 @@ const FormatPicker = ({ currentFormat, onSelect, onClose, allowedCategories }: F
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className="fixed inset-x-0 bottom-0 md:inset-auto md:absolute md:top-full md:right-0 mt-4 md:w-96 glass-card rounded-t-[2.5rem] md:rounded-[2rem] shadow-2xl z-[100] border border-white/20 overflow-hidden"
       >
-        <div className="p-6 pb-12 md:pb-6 space-y-6 bg-[#0E0A24]/98 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none h-[70vh] md:h-auto overflow-y-auto">
+        <div className="p-4 md:p-6 space-y-6 bg-[#0E0A24]/98 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none max-h-[85vh] md:h-auto overflow-y-auto">
           {/* Mobile Handle */}
-          <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-2 md:hidden" />
+          <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-4 md:hidden" />
           
           {/* Search Header */}
           <div className="flex items-center gap-4">
@@ -83,58 +83,53 @@ const FormatPicker = ({ currentFormat, onSelect, onClose, allowedCategories }: F
                 placeholder="Search Format..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="bg-transparent border-none outline-none text-sm w-full placeholder:text-slate-600"
+                className="bg-transparent border-none outline-none text-sm w-full placeholder:text-slate-600 focus:ring-0"
               />
             </div>
             <button 
               onClick={onClose}
-              className="md:hidden p-3 bg-white/5 rounded-xl hover:bg-rose-500/20 text-slate-400 hover:text-rose-400"
+              className="md:hidden p-3 bg-white/5 rounded-xl text-slate-400"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          {search && (
-            <button onClick={() => setSearch('')}>
-              <X className="w-3 h-3 text-slate-500" />
-            </button>
-          )}
-        </div>
 
-        <div className="flex gap-4 min-h-[300px]">
-          {/* Sidebar Categories */}
-          {!search && (
-            <div className="w-24 border-r border-white/10 pr-4 space-y-2">
-              {filteredCategories.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`w-full p-3 rounded-xl flex flex-col items-center gap-1 transition-all
-                    ${activeCategory === cat.id ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
-                >
-                  {cat.icon}
-                  <span className="text-[10px] font-bold uppercase tracking-tighter">{cat.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Formats Grid */}
-          <div className="flex-1 max-h-[350px] overflow-y-auto custom-scrollbar">
-            <div className="grid grid-cols-2 gap-2">
-              {filteredCategories
-                .filter(cat => search || cat.id === activeCategory)
-                .flatMap(cat => cat.formats)
-                .map(fmt => (
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Categories: Horizontal Scroll on Mobile, Sidebar on Desktop */}
+            {!search && (
+              <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 md:w-24 md:border-r md:border-white/10 md:pr-4 custom-scrollbar-hide">
+                {filteredCategories.map(cat => (
                   <button
-                    key={fmt}
-                    onClick={() => { onSelect(fmt); onClose(); }}
-                    className={`p-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all
-                      ${currentFormat === fmt ? 'bg-indigo-600 text-white' : 'glass border-white/5 text-slate-400 hover:text-white hover:border-white/20'}`}
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`flex-shrink-0 flex flex-row md:flex-col items-center gap-2 md:gap-1 px-4 py-2 md:p-3 rounded-xl transition-all
+                      ${activeCategory === cat.id ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'text-slate-500 hover:text-white hover:bg-white/5 border border-transparent'}`}
                   >
-                    {fmt}
-                    {currentFormat === fmt && <Check className="w-3 h-3" />}
+                    {cat.icon}
+                    <span className="text-[10px] md:text-[10px] font-bold uppercase tracking-tighter whitespace-nowrap">{cat.name}</span>
                   </button>
                 ))}
+              </div>
+            )}
+
+            {/* Formats Grid */}
+            <div className="flex-1 min-h-[200px]">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {filteredCategories
+                  .filter(cat => search || cat.id === activeCategory)
+                  .flatMap(cat => cat.formats)
+                  .map(fmt => (
+                    <button
+                      key={fmt}
+                      onClick={() => { onSelect(fmt); onClose(); }}
+                      className={`p-4 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-between transition-all active:scale-95
+                        ${currentFormat === fmt ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'glass border-white/5 text-slate-400 hover:text-white hover:border-white/20'}`}
+                    >
+                      {fmt}
+                      {currentFormat === fmt && <Check className="w-3 h-3" />}
+                    </button>
+                  ))}
+              </div>
             </div>
           </div>
         </div>
