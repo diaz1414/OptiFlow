@@ -71,7 +71,7 @@ const Footer = () => {
         <div className="flex flex-wrap justify-center gap-8 text-sm font-medium text-slate-400">
           <button onClick={() => setModalType('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
           <button onClick={() => setModalType('terms')} className="hover:text-white transition-colors">Terms of Service</button>
-          <a href="#" className="hover:text-white transition-colors">Github</a>
+          <a href="https://github.com/diaz1414/OptiFlow" target="_blank" className="hover:text-white transition-colors">Github</a>
         </div>
 
         <div className="flex items-center gap-2 text-xs text-slate-600 font-bold uppercase tracking-widest">
