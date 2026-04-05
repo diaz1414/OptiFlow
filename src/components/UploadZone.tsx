@@ -75,7 +75,7 @@ const UploadZone = () => {
     const url = URL.createObjectURL(result);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `optimizedByOptiFlow_${result.name}`;
+    link.download = `[OptiFlow] - ${result.name}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
