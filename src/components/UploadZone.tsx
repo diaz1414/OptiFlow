@@ -63,9 +63,15 @@ const UploadZone = () => {
         const compressed = await compressVideo(file, { quality: quality > 70 ? 'high' : 'normal' }, setProgress);
         setResult(compressed);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Optimization error:', err);
-      setError('Processing failed. Please try a smaller file or different format.');
+      if (!window.crossOriginIsolated) {
+        setError('Security error: Browser requires HTTPS/Localhost for video processing. If you are on mobile, use a secure tunnel (ngrok) for local testing.');
+      } else if (err.message?.includes('memory') || err.message?.includes('buffer')) {
+        setError('Mobile Memory Error: File is too large for your device’s browser memory. Please try a smaller file (< 50MB).');
+      } else {
+        setError('Processing failed. Please try a smaller file or different format.');
+      }
     } finally {
       setIsProcessing(false);
     }
