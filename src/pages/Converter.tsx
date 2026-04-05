@@ -297,9 +297,13 @@ const Converter = () => {
                         <Loader2 className="w-20 h-20 text-indigo-500 animate-spin" />
                         {progress > 0 && <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">{progress}%</span>}
                       </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold mb-2 text-white">Engines Running...</p>
-                        <p className="text-slate-500">Transforming your files with WebAssembly cores.</p>
+                      <div className="text-center space-y-3">
+                        <h4 className="text-2xl font-black mb-1 text-white tracking-tight uppercase">
+                          {progress === 0 ? "Contacting Engine..." : progress === 100 ? "Finalizing..." : "Synthesizing..."}
+                        </h4>
+                        <p className="text-slate-500 text-sm italic font-medium animate-pulse">
+                          Processing locally on your device. Do not close this tab.
+                        </p>
                       </div>
                     </motion.div>
                   )}

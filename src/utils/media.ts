@@ -26,17 +26,39 @@ export const compressImage = async (file: File, options: any) => {
 };
 
 let ffmpeg: FFmpeg | null = null;
+let isLoading = false;
+let progressCallback: ((p: number) => void) | null = null;
 
 const getFFmpeg = async () => {
-  if (ffmpeg) return ffmpeg;
+  if (ffmpeg && ffmpeg.loaded) return ffmpeg;
+  if (isLoading) {
+    while (isLoading) {
+      await new Promise(r => setTimeout(r, 100));
+    }
+    return ffmpeg!;
+  }
   
-  ffmpeg = new FFmpeg();
-  const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
-  await ffmpeg.load({
-    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-  });
-  return ffmpeg;
+  isLoading = true;
+  try {
+    ffmpeg = new FFmpeg();
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
+    
+    ffmpeg.on('log', ({ message }) => {
+      console.log('FFmpeg:', message);
+    });
+
+    ffmpeg.on('progress', ({ progress }) => {
+      if (progressCallback) progressCallback(Math.round(progress * 100));
+    });
+
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+    });
+    return ffmpeg;
+  } finally {
+    isLoading = false;
+  }
 };
 
 export const compressVideo = async (file: File, options: any, onProgress: (p: number) => void) => {
@@ -44,17 +66,12 @@ export const compressVideo = async (file: File, options: any, onProgress: (p: nu
   const inputName = 'input.mp4';
   const outputName = 'output.mp4';
   
-  ffmpeg.on('progress', ({ progress }) => {
-    onProgress(Math.round(progress * 100));
-  });
+  progressCallback = onProgress;
 
   await ffmpeg.writeFile(inputName, await fetchFile(file));
   
-  // High quality (crf 28 is default, 23 is better, 18 is visually lossless)
-  // We use crf 28 for "perceptual losslessness" with size reduction
-  // Preset 'veryfast' for browser speed
   const crf = options.quality === 'high' ? '23' : '28';
-  
+  console.log('Starting compression...');
   await ffmpeg.exec(['-i', inputName, '-vcodec', 'libx264', '-crf', crf, '-preset', 'veryfast', outputName]);
   
   const data = await ffmpeg.readFile(outputName);
@@ -64,14 +81,13 @@ export const compressVideo = async (file: File, options: any, onProgress: (p: nu
 
 export const convertVideo = async (file: File, targetFormat: string, onProgress: (p: number) => void) => {
   const ffmpeg = await getFFmpeg();
-  const inputName = `input_${file.name}`;
+  const inputName = `input_${file.name.replace(/\s+/g, '_')}`;
   const outputName = `output.${targetFormat}`;
   
-  ffmpeg.on('progress', ({ progress }) => {
-    onProgress(Math.round(progress * 100));
-  });
+  progressCallback = onProgress;
 
   await ffmpeg.writeFile(inputName, await fetchFile(file));
+  console.log('Starting conversion...');
   await ffmpeg.exec(['-i', inputName, outputName]);
   
   const data = await ffmpeg.readFile(outputName);
@@ -82,16 +98,14 @@ export const convertVideo = async (file: File, targetFormat: string, onProgress:
 
 export const videoToGif = async (file: File, onProgress: (p: number) => void) => {
   const ffmpeg = await getFFmpeg();
-  const inputName = `input_${file.name}`;
+  const inputName = `input_${file.name.replace(/\s+/g, '_')}`;
   const outputName = 'output.gif';
   
-  ffmpeg.on('progress', ({ progress }) => {
-    onProgress(Math.round(progress * 100));
-  });
+  progressCallback = onProgress;
 
   await ffmpeg.writeFile(inputName, await fetchFile(file));
+  console.log('Starting GIF conversion...');
   
-  // High quality GIF conversion filters
   await ffmpeg.exec([
     '-i', inputName, 
     '-vf', 'fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse', 

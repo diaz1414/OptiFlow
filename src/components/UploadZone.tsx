@@ -198,16 +198,20 @@ const UploadZone = () => {
                     className="flex flex-col items-center justify-center py-10 space-y-6"
                   >
                     <div className="relative">
-                      <Loader2 className="w-16 h-16 text-indigo-500 animate-spin" />
+                      <Loader2 className="w-20 h-20 text-indigo-500 animate-spin" />
                       {progress > 0 && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-xs font-bold">{progress}%</span>
+                          <span className="text-xs font-black text-white">{progress}%</span>
                         </div>
                       )}
                     </div>
-                    <div className="text-center">
-                      <p className="font-bold text-xl mb-1">Optimizing Media...</p>
-                      <p className="text-slate-400 text-sm">Our WebAssembly core is processing your file locally.</p>
+                    <div className="text-center space-y-3">
+                      <h4 className="text-2xl font-black mb-1 text-white tracking-tight uppercase">
+                        {progress === 0 ? "Contacting Engine..." : progress === 100 ? "Finalizing..." : "Synthesizing..."}
+                      </h4>
+                      <p className="text-slate-500 text-sm italic font-medium animate-pulse">
+                        Processing locally on your device. Do not close this tab.
+                      </p>
                     </div>
                   </motion.div>
                 )}
