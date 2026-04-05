@@ -97,16 +97,18 @@ const FormatPicker = ({ currentFormat, onSelect, onClose, allowedCategories }: F
           <div className="flex flex-col md:flex-row gap-8">
             {/* Categories: Horizontal Scroll on Mobile, Sidebar on Desktop */}
             {!search && (
-              <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 md:w-28 md:border-r md:border-white/10 md:pr-6 custom-scrollbar-hide">
+              <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 md:w-32 md:border-r md:border-white/10 md:pr-8 custom-scrollbar-hide">
                 {filteredCategories.map(cat => (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`flex-shrink-0 flex flex-row md:flex-col items-center gap-2 md:gap-1.5 px-4 py-2 md:p-3 rounded-2xl transition-all
+                    className={`flex-shrink-0 flex flex-row md:flex-col items-center gap-2 md:gap-2 px-5 py-2.5 md:py-4 rounded-2xl transition-all duration-300
                       ${activeCategory === cat.id ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'text-slate-500 hover:text-white hover:bg-white/5 border border-transparent'}`}
                   >
-                    {cat.icon}
-                    <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-tighter whitespace-nowrap">{cat.name}</span>
+                    <div className={`${activeCategory === cat.id ? 'scale-110' : 'scale-100'} transition-transform duration-300`}>
+                      {cat.icon}
+                    </div>
+                    <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest whitespace-nowrap">{cat.name}</span>
                   </button>
                 ))}
               </div>
@@ -114,7 +116,7 @@ const FormatPicker = ({ currentFormat, onSelect, onClose, allowedCategories }: F
 
             {/* Formats Grid */}
             <div className="flex-1 min-h-[250px]">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {filteredCategories
                   .filter(cat => search || cat.id === activeCategory)
                   .flatMap(cat => cat.formats)
@@ -122,11 +124,11 @@ const FormatPicker = ({ currentFormat, onSelect, onClose, allowedCategories }: F
                     <button
                       key={fmt}
                       onClick={() => { onSelect(fmt); onClose(); }}
-                      className={`p-4 rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-between transition-all active:scale-95
-                        ${currentFormat === fmt ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'glass border-white/5 text-slate-400 hover:text-white hover:border-white/20'}`}
+                      className={`h-16 rounded-2xl text-[11px] md:text-sm font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 active:scale-95
+                        ${currentFormat === fmt ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/40 border border-indigo-400/50' : 'glass border-white/5 text-slate-400 hover:text-white hover:border-white/20'}`}
                     >
                       {fmt}
-                      {currentFormat === fmt && <Check className="w-3 h-3" />}
+                      {currentFormat === fmt && <Check className="w-4 h-4" />}
                     </button>
                   ))}
               </div>
