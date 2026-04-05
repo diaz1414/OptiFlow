@@ -180,15 +180,16 @@ const Converter = () => {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
           </span>
           <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-indigo-300">
-            Converter <span className="text-white/40 ml-1 font-medium">[Smart]</span>
+            PRO EDITION <span className="text-white/40 ml-1 font-medium">[SMART]</span>
           </span>
         </motion.div>
-        <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight">
-          Smart <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Converter</span>
+        <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter leading-[0.85]">
+          Universal <br/>
+          <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-600 bg-clip-text text-transparent">File Converter</span>
         </h1>
-        <p className="text-slate-400 text-lg max-w-2xl">
-          Complete file processing. Extract audio from video, convert PDF to Image,
-          and transform formats locally with zero privacy risk.
+        <p className="text-slate-400 text-lg md:text-xl max-w-3xl font-medium leading-relaxed">
+          Switch between any video, audio, or document format in seconds. <br className="hidden md:block" />
+          High-quality results with <span className="text-indigo-400">total privacy</span>—your files never leave your device.
         </p>
       </div>
 
