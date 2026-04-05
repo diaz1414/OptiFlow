@@ -64,6 +64,7 @@ const UploadZone = () => {
         setResult(compressed);
       }
     } catch (err) {
+      console.error('Optimization error:', err);
       setError('Processing failed. Please try a smaller file or different format.');
     } finally {
       setIsProcessing(false);
@@ -75,7 +76,7 @@ const UploadZone = () => {
     const url = URL.createObjectURL(result);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `[OptiFlow] - ${result.name}`;
+    link.download = `optimizedByOptiFlow_${result.name}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
