@@ -80,8 +80,16 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="mt-20 text-center text-[10px] text-slate-700 font-bold uppercase tracking-[0.3em]">
-        © 2026 OptiFlow Labs • All Rights Reserved
+      <div className="mt-20 text-center text-[10px] text-slate-700 font-black uppercase tracking-[0.3em] flex flex-col items-center gap-4">
+        <span>© 2026 OptiFlow • All Rights Reserved</span>
+        <a 
+          href="http://diawwdev.codai.site" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-indigo-500/50 hover:text-indigo-400 transition-colors cursor-pointer"
+        >
+          Developed by diaww.dev
+        </a>
       </div>
 
       <AnimatePresence>
