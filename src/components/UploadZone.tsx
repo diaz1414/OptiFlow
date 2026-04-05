@@ -11,7 +11,7 @@ const UploadZone = () => {
   const [result, setResult] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [quality, setQuality] = useState(80); // 1-100
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -54,7 +54,7 @@ const UploadZone = () => {
     if (!file) return;
     setIsProcessing(true);
     setProgress(0);
-    
+
     try {
       if (file.type.startsWith('image/')) {
         const compressed = await compressImage(file, { quality: quality / 100 });
@@ -75,7 +75,7 @@ const UploadZone = () => {
     const url = URL.createObjectURL(result);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `optimized_${result.name}`;
+    link.download = `optimizedByOptiFlow_${result.name}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -103,11 +103,11 @@ const UploadZone = () => {
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
             >
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleChange} 
-                className="hidden" 
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleChange}
+                className="hidden"
                 accept="image/*,video/*"
               />
               <div className="bg-indigo-500/10 p-5 rounded-2xl mb-6">
@@ -154,11 +154,11 @@ const UploadZone = () => {
                       <label className="text-slate-300 font-medium">Quality Strength</label>
                       <span className="text-indigo-400 font-bold bg-indigo-400/10 px-3 py-1 rounded-lg">{quality}%</span>
                     </div>
-                    <input 
-                      type="range" 
-                      min="10" 
-                      max="100" 
-                      value={quality} 
+                    <input
+                      type="range"
+                      min="10"
+                      max="100"
+                      value={quality}
                       onChange={(e) => setQuality(parseInt(e.target.value))}
                       className="w-full h-2 bg-white/5 rounded-lg appearance-none cursor-pointer accent-indigo-500 border border-white/10"
                     />
@@ -168,7 +168,7 @@ const UploadZone = () => {
                     </div>
                   </div>
 
-                  <button 
+                  <button
                     onClick={handleOptimize}
                     className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-2xl font-bold transition-all shadow-xl shadow-indigo-500/20 active:scale-[0.98]"
                   >
@@ -180,8 +180,8 @@ const UploadZone = () => {
               {/* Processing/Result State */}
               <AnimatePresence>
                 {isProcessing && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }} 
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col items-center justify-center py-10 space-y-6"
                   >
@@ -225,13 +225,13 @@ const UploadZone = () => {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4">
-                      <button 
+                      <button
                         onClick={downloadFile}
                         className="flex-1 py-5 bg-white text-black hover:bg-slate-200 rounded-2xl font-bold transition-all flex items-center justify-center gap-2"
                       >
                         <Download className="w-5 h-5" /> Download Result
                       </button>
-                      <button 
+                      <button
                         onClick={() => { setFile(null); setResult(null); }}
                         className="px-8 py-5 glass hover:bg-white/5 text-white rounded-2xl font-bold transition-all"
                       >
@@ -251,7 +251,7 @@ const UploadZone = () => {
           )}
         </AnimatePresence>
       </div>
-      
+
       <p className="mt-8 text-center text-slate-500 text-sm">
         Maximum recommended video file size: 100MB for optimal browser performance.
       </p>
